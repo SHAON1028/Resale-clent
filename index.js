@@ -32,6 +32,7 @@ const run = async()=>{
         const categories = await categoriesCOllections.find(query).toArray()
         res.send(categories)
     })    
+     
 
     //user
     app.post('/users', async (req, res) => {
@@ -73,7 +74,14 @@ const run = async()=>{
         const query = {email}
         const result = await usersCollection.findOne(query)
         res.send({isSeller:result?.role === 'Seller'})
+
+     
     });
+    app.get('/users/seller',async (req,res)=>{
+        const query = {role: 'Seller'}
+        const sellers = await usersCollection.find(query).toArray()
+        res.send(sellers)
+    })   
     // end bracket
     }
 
