@@ -23,6 +23,7 @@ const run = async()=>{
        const usersCollection = client.db('Resale').collection('users')
        const productsCollection = client.db('Resale').collection('products')
        const ordersCollection = client.db('Resale').collection('orders')
+       const advertiseCollection = client.db('Resale').collection('advertise')
 
 
     //    endpooint
@@ -50,7 +51,26 @@ const run = async()=>{
         const result = await usersCollection.deleteOne(filter);
         res.send(result);
     })
+    // delete product
+    app.delete('/products/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await productsCollection.deleteOne(filter);
+        res.send(result);
+    })
+    app.delete('/advertise/:name', async (req, res) => {
+        const name = req.params.name;
+        const filter = { name:name };
+        const result = await advertiseCollection.deleteOne(filter);
+        res.send(result);
+    })
 
+    // Advertise
+    app.post('/advertise', async (req, res) => {
+        const product = req.body
+        const result = await advertiseCollection.insertOne(product);
+        res.send(result);
+    })
 
     // products
     app.get('/products/:category',async (req,res) =>{
@@ -72,7 +92,7 @@ const run = async()=>{
         const query = {email: email}
         const products = await productsCollection.find(query).toArray()
         res.send(products)
-        
+
     })
 
     // Orders
