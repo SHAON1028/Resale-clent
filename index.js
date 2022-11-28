@@ -67,6 +67,13 @@ const run = async()=>{
         res.send({result});
 
     })
+    app.get('/dashboard/myproduct/:email', async (req, res) => {
+        const email = req.params.email
+        const query = {email: email}
+        const products = await productsCollection.find(query).toArray()
+        res.send(products)
+        
+    })
 
     // Orders
     app.post('/orders', async (req, res) => {
@@ -103,7 +110,8 @@ const run = async()=>{
         const query = {role: 'Seller'}
         const sellers = await usersCollection.find(query).toArray()
         res.send(sellers)
-    })  
+    }) 
+    
     
     // Buyer
 
