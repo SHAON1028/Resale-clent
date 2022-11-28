@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000
 require('colors')
 require("dotenv").config();
@@ -43,6 +43,13 @@ const run = async()=>{
 
         res.send({result});
     });
+    // delete user
+    app.delete('/users/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await usersCollection.deleteOne(filter);
+        res.send(result);
+    })
 
 
     // products
@@ -81,7 +88,30 @@ const run = async()=>{
         const query = {role: 'Seller'}
         const sellers = await usersCollection.find(query).toArray()
         res.send(sellers)
-    })   
+    })  
+    
+    // Buyer
+
+    app.get('/users/buyer',async (req,res)=>{
+        const query = {role: 'Buyer'}
+        const buyers = await usersCollection.find(query).toArray()
+        res.send(buyers)
+    })  
+
+    // verification 
+
+    app.put('/users/admin/:id',  async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) }
+        const options = { upsert: true };
+        const updatedDoc = {
+            $set: {
+                status: 'verified'
+            }
+        }
+        const result = await usersCollection.updateOne(filter, updatedDoc, options);
+        res.send(result);
+    });
     // end bracket
     }
 
