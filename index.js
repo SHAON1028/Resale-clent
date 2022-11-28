@@ -59,6 +59,14 @@ const run = async()=>{
         const products = await productsCollection.find(query).toArray()
         res.send(products)
     })
+    app.post('/products', async (req, res) => {
+        const product = req.body;
+        const result = await productsCollection.insertOne(product);
+        console.log(result)
+
+        res.send({result});
+
+    })
 
     // Orders
     app.post('/orders', async (req, res) => {
@@ -73,6 +81,13 @@ const run = async()=>{
         const query = {email}
         const result = await usersCollection.findOne(query)
         res.send({isAdmin:result?.role === 'admin'})
+    });
+    // checkVerification
+    app.get('/users/checkVerification/:email', async (req, res) => {
+        const email = req.params.email
+        const query = {email}
+        const result = await usersCollection.findOne(query)
+        res.send({isVerification:result?.status === 'verified'})
     });
     
     //check seller
