@@ -99,6 +99,14 @@ const run = async()=>{
         const result = await productsCollection.updateOne(filter, updatedDoc, options);
         res.send(result);
     })
+    app.get('/dashboard/orders/:email', async (req, res) => {
+        const email = req.params.email
+        const query = {email: email}
+        const products = await ordersCollection.find(query).toArray()
+        res.send(products)
+
+    })
+    // myorders
     app.get('/dashboard/myproduct/:email', async (req, res) => {
         const email = req.params.email
         const query = {email: email}
