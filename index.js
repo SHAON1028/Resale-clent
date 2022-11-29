@@ -33,7 +33,11 @@ const run = async()=>{
         const categories = await categoriesCOllections.find(query).toArray()
         res.send(categories)
     })    
-     
+    app.get('/advertise', async (req, res) => {
+      
+        const result = await productsCollection.find({add:'ok'}).limit(3).toArray()
+        res.send(result)
+    })
 
     //user
     app.post('/users', async (req, res) => {
@@ -58,12 +62,7 @@ const run = async()=>{
         const result = await productsCollection.deleteOne(filter);
         res.send(result);
     })
-    app.delete('/advertise/:name', async (req, res) => {
-        const name = req.params.name;
-        const filter = { name:name };
-        const result = await advertiseCollection.deleteOne(filter);
-        res.send(result);
-    })
+
 
     // Advertise
     app.post('/advertise', async (req, res) => {
@@ -86,6 +85,19 @@ const run = async()=>{
 
         res.send({result});
 
+    })
+    app.put('/products/:id', async (req, res) => {
+        const id = req.params.id;
+        console.log(id)
+        const filter = { _id: ObjectId(id) }
+        const options = { upsert: true };
+        const updatedDoc = {
+            $set: {
+                add: 'ok'
+            }
+        }
+        const result = await productsCollection.updateOne(filter, updatedDoc, options);
+        res.send(result);
     })
     app.get('/dashboard/myproduct/:email', async (req, res) => {
         const email = req.params.email
@@ -116,6 +128,7 @@ const run = async()=>{
         const result = await usersCollection.findOne(query)
         res.send({isVerification:result?.status === 'verified'})
     });
+    // advertise product
     
     //check seller
     app.get('/users/checkSeller/:email', async (req, res) => {
