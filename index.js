@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { query } = require('express');
 const port = process.env.PORT || 5000
 require('colors')
 require("dotenv").config();
@@ -25,7 +26,7 @@ const run = async()=>{
        const productsCollection = client.db('Resale').collection('products')
        const ordersCollection = client.db('Resale').collection('orders')
        const paymentsCollection = client.db('Resale').collection('payments')
-
+      const reportCollection = client.db('Resale').collection('reports')
 
     //    endpooint
 
@@ -98,6 +99,12 @@ const run = async()=>{
             }
         }
         const result = await productsCollection.updateOne(filter, updatedDoc, options);
+        res.send(result);
+    })
+    app.get('/product/:id', async (req, res) => {
+        const id = req.params.id;
+        const query ={_id:ObjectId(id)}
+        const result = await productsCollection.findOne(query);
         res.send(result);
     })
     app.put('/products/sold/:id', async (req, res) => {
@@ -237,8 +244,35 @@ const run = async()=>{
         res.send(result);
     })
 
+
+    app.post('/advertise', async (req, res) => {
+        const product = req.body
+        const result = await advertiseCollection.insertOne(product);
+        res.send(result);
+    })
+
+    //report
+    app.post('/report', async (req, res) => {
+        const report = req.body
+        const result = await reportCollection.insertOne(report);
+        res.send(result);
+    })
+    app.get('/dashboard/reports',async(req,res) => {
+        const query = {}
+        const reports = await reportCollection.find(query).toArray()
+        res.send(reports)
+    })
+    app.delete('/reports/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await reportCollection.deleteOne(filter);
+        res.send(result);
+    })
+
     // end bracket
+      
     }
+  
 
     finally{
 
